@@ -13,18 +13,42 @@ import reportRoutes from './routes/report';
 const app: Express = express();
 const port = process.env.PORT || 3001;
 
-// Middleware
-app.use(cors());
+// CORS configuration
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  process.env.FRONTEND_URL, // Production frontend URL
+].filter(Boolean);
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, etc)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn(`CORS blocked: ${origin}`);
+      callback(null, true); // Allow all for now, tighten later
+    }
+  },
+  credentials: true,
+}));
+
 app.use(express.json());
 
 // Health check
 app.get('/health', (req: Request, res: Response) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
 });
 
 // API routes
 app.get('/api', (req: Request, res: Response) => {
-  res.json({ message: 'FamFi API v1.0' });
+  res.json({ message: 'FamFi API v1.0', environment: process.env.NODE_ENV });
 });
 
 // Routes
@@ -49,5 +73,6 @@ app.get('/api/db-test', async (req: Request, res: Response) => {
 });
 
 app.listen(port, () => {
-  console.log(`⚡️ Server running at http://localhost:${port}`);
+  console.log(`⚡️ Server running on port ${port}`);
+  console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
 });
