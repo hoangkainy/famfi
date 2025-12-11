@@ -176,7 +176,7 @@ erDiagram
 |------|--------|
 | Project Setup (Monorepo) | ✅ Done |
 | Configure Supabase | ✅ Done |
-| Authentication | ⏳ Pending |
+| Authentication | ✅ Done |
 | Family Management | ⏳ Pending |
 | Transaction CRUD | ⏳ Pending |
 | Quick Input Parser | ⏳ Pending |
