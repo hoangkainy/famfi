@@ -54,7 +54,8 @@ export async function getCategoryBreakdown(familyId: string, month?: string): Pr
 
   for (const tx of data || []) {
     const key = tx.category_id || 'uncategorized';
-    const categoryData = tx.categories as { name: string; icon: string } | null;
+    const rawCategory = tx.categories as { name: string; icon: string } | { name: string; icon: string }[] | null;
+    const categoryData = Array.isArray(rawCategory) ? rawCategory[0] : rawCategory;
 
     if (!grouped[key]) {
       grouped[key] = {
