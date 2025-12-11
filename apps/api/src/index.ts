@@ -5,6 +5,7 @@ import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 import { supabase } from './lib/supabase';
 import authRoutes from './routes/auth';
+import familyRoutes from './routes/family';
 
 const app: Express = express();
 const port = process.env.PORT || 3001;
@@ -25,6 +26,9 @@ app.get('/api', (req: Request, res: Response) => {
 
 // Auth routes
 app.use('/api/auth', authRoutes);
+
+// Family routes
+app.use('/api/families', familyRoutes);
 
 // Supabase connection test
 app.get('/api/db-test', async (req: Request, res: Response) => {
