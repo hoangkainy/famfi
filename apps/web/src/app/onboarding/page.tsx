@@ -3,6 +3,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -20,34 +23,20 @@ export default function OnboardingPage() {
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        router.push('/login');
-        return;
-      }
+      if (!session) { router.push('/login'); return; }
 
       const response = await fetch('http://localhost:3001/api/families', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
-        },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
         body: JSON.stringify({ name: familyName })
       });
 
       const data = await response.json();
-
-      if (!data.success) {
-        setError(data.error?.message || 'Failed to create family');
-        setLoading(false);
-        return;
-      }
+      if (!data.success) { setError(data.error?.message || 'Failed'); setLoading(false); return; }
 
       router.push('/dashboard');
       router.refresh();
-    } catch (err) {
-      setError('Failed to create family');
-      setLoading(false);
-    }
+    } catch { setError('Failed to create family'); setLoading(false); }
   }
 
   async function handleJoinFamily(e: React.FormEvent) {
@@ -57,145 +46,100 @@ export default function OnboardingPage() {
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        router.push('/login');
-        return;
-      }
+      if (!session) { router.push('/login'); return; }
 
       const response = await fetch('http://localhost:3001/api/families/join', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
-        },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
         body: JSON.stringify({ inviteCode })
       });
 
       const data = await response.json();
-
-      if (!data.success) {
-        setError(data.error?.message || 'Failed to join family');
-        setLoading(false);
-        return;
-      }
+      if (!data.success) { setError(data.error?.message || 'Failed'); setLoading(false); return; }
 
       router.push('/dashboard');
       router.refresh();
-    } catch (err) {
-      setError('Failed to join family');
-      setLoading(false);
-    }
+    } catch { setError('Failed to join family'); setLoading(false); }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900">Welcome to FamFi!</h1>
-          <p className="mt-2 text-gray-600">
-            Let&apos;s get you set up with your family
-          </p>
-        </div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl">Welcome to FamFi!</CardTitle>
+          <CardDescription>Let&apos;s set up your family</CardDescription>
+        </CardHeader>
 
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-            {error}
-          </div>
-        )}
-
-        {step === 'choice' && (
-          <div className="space-y-4">
-            <button
-              onClick={() => setStep('create')}
-              className="w-full p-6 border-2 border-gray-200 rounded-lg hover:border-blue-500 transition-colors text-left"
-            >
-              <h3 className="text-lg font-semibold text-gray-900">Create a new family</h3>
-              <p className="text-gray-500 mt-1">Start fresh and invite your family members</p>
-            </button>
-
-            <button
-              onClick={() => setStep('join')}
-              className="w-full p-6 border-2 border-gray-200 rounded-lg hover:border-blue-500 transition-colors text-left"
-            >
-              <h3 className="text-lg font-semibold text-gray-900">Join an existing family</h3>
-              <p className="text-gray-500 mt-1">Use an invite code from a family member</p>
-            </button>
-          </div>
-        )}
-
-        {step === 'create' && (
-          <form onSubmit={handleCreateFamily} className="space-y-6">
-            <div>
-              <label htmlFor="familyName" className="block text-sm font-medium text-gray-700">
-                Family name
-              </label>
-              <input
-                id="familyName"
-                type="text"
-                value={familyName}
-                onChange={(e) => setFamilyName(e.target.value)}
-                placeholder="e.g., The Smiths"
-                required
-                className="mt-1 block w-full px-3 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              />
+        <CardContent>
+          {error && (
+            <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+              {error}
             </div>
+          )}
 
-            <div className="flex space-x-4">
-              <button
-                type="button"
-                onClick={() => setStep('choice')}
-                className="flex-1 py-3 px-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-              >
-                Back
-              </button>
-              <button
-                type="submit"
-                disabled={loading}
-                className="flex-1 py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-              >
-                {loading ? 'Creating...' : 'Create Family'}
-              </button>
-            </div>
-          </form>
-        )}
+          {step === 'choice' && (
+            <div className="space-y-4">
+              <Button onClick={() => setStep('create')} variant="outline" className="w-full h-20 flex-col gap-1">
+                <span className="text-lg font-semibold">Create a new family</span>
+                <span className="text-sm text-muted-foreground">Start fresh and invite members</span>
+              </Button>
 
-        {step === 'join' && (
-          <form onSubmit={handleJoinFamily} className="space-y-6">
-            <div>
-              <label htmlFor="inviteCode" className="block text-sm font-medium text-gray-700">
-                Invite code
-              </label>
-              <input
-                id="inviteCode"
-                type="text"
-                value={inviteCode}
-                onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
-                placeholder="e.g., ABC123XY"
-                required
-                maxLength={8}
-                className="mt-1 block w-full px-3 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 uppercase"
-              />
+              <Button onClick={() => setStep('join')} variant="outline" className="w-full h-20 flex-col gap-1">
+                <span className="text-lg font-semibold">Join existing family</span>
+                <span className="text-sm text-muted-foreground">Use an invite code</span>
+              </Button>
             </div>
+          )}
 
-            <div className="flex space-x-4">
-              <button
-                type="button"
-                onClick={() => setStep('choice')}
-                className="flex-1 py-3 px-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-              >
-                Back
-              </button>
-              <button
-                type="submit"
-                disabled={loading}
-                className="flex-1 py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-              >
-                {loading ? 'Joining...' : 'Join Family'}
-              </button>
-            </div>
-          </form>
-        )}
-      </div>
+          {step === 'create' && (
+            <form onSubmit={handleCreateFamily} className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Family name</label>
+                <Input
+                  value={familyName}
+                  onChange={(e) => setFamilyName(e.target.value)}
+                  placeholder="e.g., The Smiths"
+                  required
+                />
+              </div>
+
+              <div className="flex gap-3">
+                <Button type="button" variant="outline" onClick={() => setStep('choice')} className="flex-1">
+                  Back
+                </Button>
+                <Button type="submit" disabled={loading} className="flex-1">
+                  {loading ? 'Creating...' : 'Create'}
+                </Button>
+              </div>
+            </form>
+          )}
+
+          {step === 'join' && (
+            <form onSubmit={handleJoinFamily} className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Invite code</label>
+                <Input
+                  value={inviteCode}
+                  onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+                  placeholder="e.g., ABC123XY"
+                  required
+                  maxLength={8}
+                  className="uppercase text-center text-lg tracking-widest"
+                />
+              </div>
+
+              <div className="flex gap-3">
+                <Button type="button" variant="outline" onClick={() => setStep('choice')} className="flex-1">
+                  Back
+                </Button>
+                <Button type="submit" disabled={loading} className="flex-1">
+                  {loading ? 'Joining...' : 'Join'}
+                </Button>
+              </div>
+            </form>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
