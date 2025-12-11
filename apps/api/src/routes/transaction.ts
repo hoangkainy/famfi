@@ -9,6 +9,7 @@ import {
   deleteTransaction,
   getTransactionSummary
 } from '../services/transaction';
+import { getCategories } from '../services/category';
 import { parseQuickInput } from '../lib/quickInput';
 
 const router = Router();
@@ -136,12 +137,54 @@ router.post('/quick', authMiddleware, async (req: AuthenticatedRequest, res: Res
       return;
     }
 
+    const txType = parsed.type || type || 'EXPENSE';
+
+    // Auto-detect category based on keywords
+    let categoryId: string | undefined;
+    const categories = await getCategories(family.id, txType);
+    const inputLower = input.toLowerCase();
+
+    // Category keyword mapping
+    const categoryKeywords: Record<string, string[]> = {
+      'Food & Dining': ['ăn', 'food', 'meal', 'breakfast', 'lunch', 'dinner', 'sáng', 'trưa', 'tối', 'cơm', 'phở', 'bún'],
+      'Coffee & Drinks': ['coffee', 'cafe', 'cà phê', 'trà sữa', 'milk tea', 'drink', 'nước', 'bia', 'beer'],
+      'Transportation': ['grab', 'taxi', 'uber', 'xe', 'xăng', 'gas', 'fuel', 'parking', 'đỗ xe'],
+      'Shopping': ['mua', 'buy', 'shopping', 'shop', 'store', 'market', 'chợ'],
+      'Bills & Utilities': ['điện', 'electric', 'internet', 'wifi', 'phone', 'điện thoại', 'bill', 'hóa đơn'],
+      'Entertainment': ['game', 'movie', 'phim', 'netflix', 'spotify', 'giải trí'],
+      'Healthcare': ['doctor', 'bác sĩ', 'thuốc', 'medicine', 'hospital', 'bệnh viện', 'khám'],
+      'Salary': ['lương', 'salary', 'wage'],
+      'Bonus': ['thưởng', 'bonus'],
+      'Freelance': ['freelance', 'tiền công', 'project']
+    };
+
+    // Find matching category
+    for (const category of categories) {
+      const keywords = categoryKeywords[category.name] || [];
+      const categoryNameLower = category.name.toLowerCase();
+      
+      // Match by category name or keywords
+      if (inputLower.includes(categoryNameLower)) {
+        categoryId = category.id;
+        break;
+      }
+      
+      for (const keyword of keywords) {
+        if (inputLower.includes(keyword.toLowerCase())) {
+          categoryId = category.id;
+          break;
+        }
+      }
+      if (categoryId) break;
+    }
+
     const transaction = await createTransaction({
       familyId: family.id,
       createdBy: req.user!.id,
       amount: parsed.amount,
       note: parsed.note,
-      type: parsed.type || type || 'EXPENSE'
+      type: txType,
+      categoryId
     });
 
     res.status(201).json({ success: true, data: transaction });
