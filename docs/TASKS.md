@@ -1,53 +1,52 @@
 # FamFi - Development Tasks
 
-> Last updated: 2025-12-12 00:00
+> Last updated: 2025-12-12 00:17
 
-## Current Sprint: MVP
+## MVP Progress: 🟢 Almost Complete!
 
-### ✅ Completed
+### ✅ Completed (Session 1 - 2025-12-11)
 
-- [x] **Planning & Setup** - 2025-12-11
-- [x] **Configure Supabase** - 2025-12-11
-- [x] **Authentication** - 2025-12-11
-- [x] **Family Management** - 2025-12-11
-- [x] **Transaction CRUD** - 2025-12-11
-  - Transaction service ✅
-  - Transaction routes ✅
-  - Quick Input parser ✅
-  - Transactions page ✅
+1. **Project Setup** ✅
+   - Monorepo (npm workspaces)
+   - Next.js + Express + TypeScript
 
----
+2. **Supabase Config** ✅
+   - Database schema + RLS
+   - TypeScript types
 
-### 🔄 In Progress
+3. **Authentication** ✅
+   - Google OAuth
+   - Email/Password
+   - Protected routes
 
-- [ ] **Categories** (optional enhancement)
-- [ ] **Dashboard & Reports**
-  - [ ] Summary with real data
-  - [ ] Charts
+4. **Family Management** ✅
+   - Create family + invite code
+   - Join family
+   - Onboarding flow
 
----
+5. **Transaction CRUD** ✅
+   - Quick Input with auto-detect (Income/Expense)
+   - Summary (Income/Expense/Balance)
+   - Transaction list
 
-### ⏳ Pending
-
-- [ ] UI Polish (shadcn/ui)
-- [ ] Deployment
-
----
-
-## Checkpoints
-
-| Checkpoint | Status |
-|------------|--------|
-| Project Setup | ✅ Done |
-| Supabase Config | ✅ Done |
-| Authentication | ✅ Done |
-| Family Management | ✅ Done |
-| Transaction CRUD | ✅ Done |
-| Dashboard MVP | 🔄 Next |
+6. **Dashboard** ✅
+   - Quick Input on dashboard
+   - Summary cards
+   - Recent transactions
+   - Invite code with copy
 
 ---
 
-## Git Commits
+### ⏳ Optional Enhancements
+
+- [ ] **Categories** - assign transactions to categories
+- [ ] **Reports** - charts, monthly comparison
+- [ ] **UI Polish** - shadcn/ui components
+- [ ] **Deployment** - Vercel + Railway
+
+---
+
+## Git Commits (8 total)
 
 1. `chore: initial project setup`
 2. `feat(api): configure Supabase database connection and schema`
@@ -55,3 +54,19 @@
 4. `fix(auth): add public.users table and trigger for Google OAuth`
 5. `feat(family): implement family management with create and join flow`
 6. `feat(transaction): implement transaction CRUD with quick input parser`
+7. `feat(quick-input): auto-detect income/expense from keywords`
+8. `feat(dashboard): add quick input, summary cards, and improved mobile UX`
+
+---
+
+## What's Working
+
+| Feature | Status |
+|---------|--------|
+| Google OAuth | ✅ |
+| Email Sign-up | ✅ |
+| Create/Join Family | ✅ |
+| Quick Input | ✅ |
+| Auto-detect Income/Expense | ✅ |
+| Dashboard Summary | ✅ |
+| Transaction List | ✅ |

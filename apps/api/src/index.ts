@@ -7,6 +7,7 @@ import { supabase } from './lib/supabase';
 import authRoutes from './routes/auth';
 import familyRoutes from './routes/family';
 import transactionRoutes from './routes/transaction';
+import categoryRoutes from './routes/category';
 
 const app: Express = express();
 const port = process.env.PORT || 3001;
@@ -33,6 +34,9 @@ app.use('/api/families', familyRoutes);
 
 // Transaction routes
 app.use('/api/transactions', transactionRoutes);
+
+// Category routes
+app.use('/api/categories', categoryRoutes);
 
 // Supabase connection test
 app.get('/api/db-test', async (req: Request, res: Response) => {
