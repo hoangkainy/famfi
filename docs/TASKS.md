@@ -1,6 +1,6 @@
 # FamFi - Development Tasks
 
-> Last updated: 2025-12-11
+> Last updated: 2025-12-11 23:13
 
 ## Current Sprint: MVP
 
@@ -16,17 +16,22 @@
   - Created Next.js frontend (`apps/web`)
   - Created Express backend (`apps/api`)
   - Verified both apps running
+  - Git initialized with initial commit
 
 ---
 
 ### 🔄 In Progress
 
 #### Phase 2: Core Infrastructure
-- [ ] **Configure Supabase**
-  - [ ] Create Supabase project
-  - [ ] Setup database tables
-  - [ ] Configure authentication providers
-  - [ ] Add environment variables
+- [/] **Configure Supabase**
+  - [x] Create Supabase project
+  - [x] Add environment variables (.env)
+  - [x] Create Supabase client (`lib/supabase.ts`)
+  - [x] Create database schema (`database/schema.sql`)
+  - [x] Create seed data (`database/seed.sql`)
+  - [x] Create TypeScript types (`types/index.ts`)
+  - [ ] **USER ACTION**: Run SQL in Supabase Dashboard
+  - [ ] Test database connection
 
 ---
 
@@ -75,7 +80,7 @@
 | Checkpoint | Target | Status |
 |------------|--------|--------|
 | Project Setup | 2025-12-11 | ✅ Done |
-| Supabase + Auth | TBD | ⏳ Pending |
+| Supabase + Auth | TBD | 🔄 In Progress |
 | Family Management | TBD | ⏳ Pending |
 | Transaction CRUD | TBD | ⏳ Pending |
 | Dashboard MVP | TBD | ⏳ Pending |
@@ -91,7 +96,16 @@
 - ✅ Setup monorepo structure
 - ✅ Next.js frontend initialized
 - ✅ Express + TypeScript backend initialized
-- ✅ Created project documentation
-- ⏸️ Paused before Supabase configuration
+- ✅ Created project documentation (`RULES.md`, `TASKS.md`)
+- ✅ Git initialized with initial commit
+- ✅ Created Supabase client
+- ✅ Created database schema (SQL)
+- ✅ Created seed data (SQL)
+- ✅ Created TypeScript types
+- ⏸️ **Paused**: Waiting for user to run SQL in Supabase Dashboard
 
-**Next session:** Configure Supabase and implement Authentication
+**Next steps:**
+1. Run `schema.sql` in Supabase SQL Editor
+2. Run `seed.sql` in Supabase SQL Editor
+3. Test connection at http://localhost:3001/api/db-test
+4. Implement Authentication

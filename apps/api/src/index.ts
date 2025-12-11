@@ -1,8 +1,9 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import { supabase } from './lib/supabase';
 
 const app: Express = express();
 const port = process.env.PORT || 3001;
@@ -19,6 +20,20 @@ app.get('/health', (req: Request, res: Response) => {
 // API routes placeholder
 app.get('/api', (req: Request, res: Response) => {
   res.json({ message: 'FamFi API v1.0' });
+});
+
+// Supabase connection test
+app.get('/api/db-test', async (req: Request, res: Response) => {
+  try {
+    const { data, error } = await supabase.from('families').select('count').limit(1);
+    if (error) {
+      res.status(500).json({ success: false, error: error.message });
+      return;
+    }
+    res.json({ success: true, message: 'Database connected successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Database connection failed' });
+  }
 });
 
 app.listen(port, () => {
