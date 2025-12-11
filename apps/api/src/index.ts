@@ -8,6 +8,7 @@ import authRoutes from './routes/auth';
 import familyRoutes from './routes/family';
 import transactionRoutes from './routes/transaction';
 import categoryRoutes from './routes/category';
+import reportRoutes from './routes/report';
 
 const app: Express = express();
 const port = process.env.PORT || 3001;
@@ -26,17 +27,12 @@ app.get('/api', (req: Request, res: Response) => {
   res.json({ message: 'FamFi API v1.0' });
 });
 
-// Auth routes
+// Routes
 app.use('/api/auth', authRoutes);
-
-// Family routes
 app.use('/api/families', familyRoutes);
-
-// Transaction routes
 app.use('/api/transactions', transactionRoutes);
-
-// Category routes
 app.use('/api/categories', categoryRoutes);
+app.use('/api/reports', reportRoutes);
 
 // Supabase connection test
 app.get('/api/db-test', async (req: Request, res: Response) => {
