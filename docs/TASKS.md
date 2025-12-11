@@ -1,6 +1,6 @@
 # FamFi - Development Tasks
 
-> Last updated: 2025-12-11 23:55
+> Last updated: 2025-12-12 00:00
 
 ## Current Sprint: MVP
 
@@ -10,27 +10,27 @@
 - [x] **Configure Supabase** - 2025-12-11
 - [x] **Authentication** - 2025-12-11
 - [x] **Family Management** - 2025-12-11
-  - Create family API ✅
-  - Join family API ✅
-  - Onboarding flow (UI) ✅
-  - Dashboard with family info ✅
+- [x] **Transaction CRUD** - 2025-12-11
+  - Transaction service ✅
+  - Transaction routes ✅
+  - Quick Input parser ✅
+  - Transactions page ✅
 
 ---
 
 ### 🔄 In Progress
 
-- [ ] **Transaction Management**
-  - [ ] Add transaction API
-  - [ ] Transaction form
-  - [ ] Quick Input parser
-  - [ ] Transaction list
+- [ ] **Categories** (optional enhancement)
+- [ ] **Dashboard & Reports**
+  - [ ] Summary with real data
+  - [ ] Charts
 
 ---
 
 ### ⏳ Pending
 
-- [ ] Categories
-- [ ] Dashboard & Reports
+- [ ] UI Polish (shadcn/ui)
+- [ ] Deployment
 
 ---
 
@@ -42,8 +42,8 @@
 | Supabase Config | ✅ Done |
 | Authentication | ✅ Done |
 | Family Management | ✅ Done |
-| Transaction CRUD | 🔄 Next |
-| Dashboard MVP | ⏳ |
+| Transaction CRUD | ✅ Done |
+| Dashboard MVP | 🔄 Next |
 
 ---
 
@@ -54,3 +54,4 @@
 3. `feat(auth): implement authentication with Supabase Auth`
 4. `fix(auth): add public.users table and trigger for Google OAuth`
 5. `feat(family): implement family management with create and join flow`
+6. `feat(transaction): implement transaction CRUD with quick input parser`

@@ -141,7 +141,7 @@ router.post('/quick', authMiddleware, async (req: AuthenticatedRequest, res: Res
       createdBy: req.user!.id,
       amount: parsed.amount,
       note: parsed.note,
-      type: type || 'EXPENSE'
+      type: parsed.type || type || 'EXPENSE'
     });
 
     res.status(201).json({ success: true, data: transaction });

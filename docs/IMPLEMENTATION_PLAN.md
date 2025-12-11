@@ -178,8 +178,8 @@ erDiagram
 | Configure Supabase | ✅ Done |
 | Authentication | ✅ Done |
 | Family Management | ✅ Done |
-| Transaction CRUD | ⏳ Pending |
-| Quick Input Parser | ⏳ Pending |
+| Transaction CRUD | ✅ Done |
+| Quick Input Parser | ✅ Done |
 | Categories | ⏳ Pending |
 | Dashboard & Reports | ⏳ Pending |
 

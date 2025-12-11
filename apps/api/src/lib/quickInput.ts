@@ -3,15 +3,16 @@
  * Parses chat-like input to extract amount and note
  * 
  * Supported formats:
- * - "breakfast 50k" → { amount: 50000, note: "breakfast" }
- * - "50k breakfast" → { amount: 50000, note: "breakfast" }
- * - "coffee 25000" → { amount: 25000, note: "coffee" }
- * - "100000 dinner with family" → { amount: 100000, note: "dinner with family" }
+ * - "breakfast 50k" → { amount: 50000, note: "breakfast", type: "EXPENSE" }
+ * - "50k breakfast" → { amount: 50000, note: "breakfast", type: "EXPENSE" }
+ * - "lương 10m" → { amount: 10000000, note: "lương", type: "INCOME" }
+ * - "salary 5000000" → { amount: 5000000, note: "salary", type: "INCOME" }
  */
 
 interface ParsedInput {
   amount: number;
   note: string;
+  type?: 'INCOME' | 'EXPENSE';
 }
 
 const MULTIPLIERS: Record<string, number> = {
@@ -25,6 +26,56 @@ const MULTIPLIERS: Record<string, number> = {
   'ngàn': 1000
 };
 
+// Keywords that indicate INCOME
+const INCOME_KEYWORDS = [
+  'lương', 'salary', 'wage', 'wages',
+  'thưởng', 'bonus',
+  'thu nhập', 'income',
+  'nhận', 'receive', 'received',
+  'freelance', 'tiền công',
+  'đầu tư', 'investment', 'invest',
+  'lãi', 'interest', 'dividend',
+  'hoàn tiền', 'refund',
+  'bán', 'sell', 'sold'
+];
+
+// Keywords that indicate EXPENSE
+const EXPENSE_KEYWORDS = [
+  'ăn', 'eat', 'food', 'meal',
+  'coffee', 'cafe', 'cà phê', 'trà sữa', 'milk tea',
+  'mua', 'buy', 'purchase', 'shopping',
+  'điện', 'electric', 'electricity',
+  'nước', 'water',
+  'gas', 'xăng', 'fuel', 'petrol',
+  'taxi', 'grab', 'uber', 'xe',
+  'bill', 'hóa đơn',
+  'rent', 'thuê',
+  'sửa', 'repair', 'fix',
+  'doctor', 'bác sĩ', 'hospital', 'bệnh viện', 'thuốc', 'medicine',
+  'giải trí', 'entertainment', 'movie', 'phim', 'game',
+  'quà', 'gift',
+  'breakfast', 'lunch', 'dinner', 'snack',
+  'sáng', 'trưa', 'tối', 'chiều'
+];
+
+function detectTransactionType(text: string): 'INCOME' | 'EXPENSE' | undefined {
+  const lowerText = text.toLowerCase();
+  
+  for (const keyword of INCOME_KEYWORDS) {
+    if (lowerText.includes(keyword.toLowerCase())) {
+      return 'INCOME';
+    }
+  }
+  
+  for (const keyword of EXPENSE_KEYWORDS) {
+    if (lowerText.includes(keyword.toLowerCase())) {
+      return 'EXPENSE';
+    }
+  }
+  
+  return undefined; // Cannot determine, default will be used
+}
+
 export function parseQuickInput(input: string): ParsedInput | null {
   if (!input || typeof input !== 'string') {
     return null;
@@ -34,6 +85,9 @@ export function parseQuickInput(input: string): ParsedInput | null {
   if (!trimmed) {
     return null;
   }
+
+  // Detect transaction type from keywords
+  const detectedType = detectTransactionType(trimmed);
 
   // Pattern 1: Amount at the beginning (50k coffee, 100000 breakfast)
   const amountFirstPattern = /^(\d+(?:\.\d+)?)\s*(k|K|m|M|tr|triệu|nghìn|ngàn)?\s*(.*)$/;
@@ -51,7 +105,8 @@ export function parseQuickInput(input: string): ParsedInput | null {
     if (note || baseAmount) {
       return {
         amount: baseAmount * multiplier,
-        note: note || 'Quick expense'
+        note: note || 'Quick expense',
+        type: detectedType
       };
     }
   }
@@ -65,7 +120,8 @@ export function parseQuickInput(input: string): ParsedInput | null {
 
     return {
       amount: baseAmount * multiplier,
-      note: note || 'Quick expense'
+      note: note || 'Quick expense',
+      type: detectedType
     };
   }
 
@@ -79,7 +135,8 @@ export function parseQuickInput(input: string): ParsedInput | null {
 
     return {
       amount: baseAmount * multiplier,
-      note
+      note,
+      type: detectedType
     };
   }
 

@@ -61,11 +61,6 @@ export async function getTransactions(filters: TransactionFilters): Promise<Tran
         name,
         icon,
         type
-      ),
-      creator:created_by (
-        id,
-        email,
-        full_name
       )
     `)
     .eq('family_id', filters.familyId)
