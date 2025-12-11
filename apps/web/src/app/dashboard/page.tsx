@@ -26,7 +26,6 @@ interface Summary {
 interface Family {
   id: string;
   name: string;
-  invite_code: string;
 }
 
 interface CategoryData {
@@ -93,7 +92,6 @@ export default function DashboardPage() {
       const txData = await txRes.json();
       if (txData.success) setRecentTx(txData.data);
 
-      // Fetch report data
       const catRes = await fetch('http://localhost:3001/api/reports/category-breakdown', { headers });
       const catData = await catRes.json();
       if (catData.success) setCategoryData(catData.data.filter((c: CategoryData & { type: string }) => c.type === 'EXPENSE'));
@@ -161,9 +159,9 @@ export default function DashboardPage() {
             <h1 className="text-lg font-bold">FamFi</h1>
             <p className="text-xs text-muted-foreground">{family?.name}</p>
           </div>
-          <Button variant="ghost" size="sm" onClick={async () => { await supabase.auth.signOut(); router.push('/login'); }}>
-            Logout
-          </Button>
+          <Link href="/settings">
+            <Button variant="ghost" size="sm">⚙️</Button>
+          </Link>
         </div>
       </header>
 
@@ -223,7 +221,7 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        {/* Monthly Trend Chart */}
+        {/* Monthly Trend */}
         {monthlyData.length > 0 && (
           <Card>
             <CardHeader className="pb-2 pt-3">
@@ -304,27 +302,6 @@ export default function DashboardPage() {
             )}
           </CardContent>
         </Card>
-
-        {/* Quick Links */}
-        <div className="grid grid-cols-2 gap-2">
-          <Link href="/categories">
-            <Card className="hover:bg-slate-100 transition-colors cursor-pointer">
-              <CardContent className="pt-3 pb-3 flex items-center gap-3">
-                <span className="text-xl">📁</span>
-                <span className="text-sm font-medium">Categories</span>
-              </CardContent>
-            </Card>
-          </Link>
-          <Card className="cursor-pointer" onClick={() => navigator.clipboard.writeText(family?.invite_code || '')}>
-            <CardContent className="pt-3 pb-3 flex items-center justify-between">
-              <div>
-                <p className="text-xs text-muted-foreground">Invite</p>
-                <p className="font-mono font-bold text-blue-600">{family?.invite_code}</p>
-              </div>
-              <span className="text-xs text-muted-foreground">Copy</span>
-            </CardContent>
-          </Card>
-        </div>
       </main>
     </div>
   );
