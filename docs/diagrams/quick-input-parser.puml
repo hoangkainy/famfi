@@ -1,0 +1,50 @@
+@startuml Quick Input Parser
+!theme plain
+
+start
+:Input: "coffee 50k";
+
+partition "Pattern Matching" {
+  :Try pattern 1:\n^(.+?)\\s+([\\d,.]+)(k|m|tr)?$;
+  if (Match?) then (yes)
+    :note = "coffee"\namount = "50"\nsuffix = "k";
+  else (no)
+    :Try pattern 2:\n^([\\d,.]+)(k|m|tr)?\\s+(.+)$;
+    if (Match?) then (yes)
+      :Extract parts;
+    else (no)
+      :Return null;
+      stop
+    endif
+  endif
+}
+
+partition "Amount Calculation" {
+  switch (suffix?)
+  case (k)
+    :amount × 1,000;
+  case (m or tr)
+    :amount × 1,000,000;
+  case (none)
+    :amount as-is;
+  endswitch
+}
+
+partition "Type Detection" {
+  :Check INCOME keywords;
+  if (Match?) then (yes)
+    :type = INCOME;
+  else (no)
+    :Check EXPENSE keywords;
+    if (Match?) then (yes)
+      :type = EXPENSE;
+    else (no)
+      :type = null;
+    endif
+  endif
+}
+
+:Return { amount, note, type };
+stop
+
+@enduml

@@ -9,172 +9,17 @@
 ## 1. System Overview
 
 ### 1.1 Architecture Diagram
-
-```plantuml
-@startuml System Architecture
-!theme plain
-
-skinparam componentStyle rectangle
-skinparam backgroundColor white
-
-package "Client Layer" {
-  [Next.js 15\nApp Router] as Frontend
-  [shadcn/ui + Tailwind] as UI
-  [Recharts] as Charts
-  [Supabase Client] as SupaClient
-  
-  Frontend --> UI
-  Frontend --> Charts
-  Frontend --> SupaClient
-}
-
-package "API Layer" {
-  [Express.js] as API
-  [Auth Middleware] as AuthMW
-  
-  package "Routes" {
-    [auth.ts] as AuthRoute
-    [family.ts] as FamilyRoute
-    [transaction.ts] as TxRoute
-    [category.ts] as CatRoute
-    [report.ts] as ReportRoute
-  }
-  
-  package "Services" {
-    [family.ts] as FamilyService
-    [transaction.ts] as TxService
-    [category.ts] as CatService
-    [report.ts] as ReportService
-  }
-  
-  API --> AuthMW
-  AuthMW --> Routes
-  Routes --> Services
-}
-
-package "Database Layer" {
-  database "Supabase PostgreSQL" as DB {
-    [users]
-    [families]
-    [family_members]
-    [transactions]
-    [categories]
-  }
-  [Row Level Security] as RLS
-  [Supabase Auth] as SupaAuth
-  
-  DB --> RLS
-}
-
-Frontend --> API : HTTP + Bearer Token
-SupaClient --> SupaAuth : OAuth / JWT
-Services --> DB : Supabase JS Client
-
-@enduml
-```
+📊 [View Diagram: system-architecture.puml](./diagrams/system-architecture.puml)
 
 ### 1.2 Deployment Diagram
-
-```plantuml
-@startuml Deployment
-!theme plain
-
-node "Vercel" {
-  [Next.js Frontend] as Web
-}
-
-node "Railway" {
-  [Express API] as API
-}
-
-cloud "Supabase" {
-  database "PostgreSQL" as DB
-  [Auth Service] as Auth
-}
-
-Web --> API : HTTPS
-API --> DB
-Web --> Auth : OAuth
-API --> DB
-
-@enduml
-```
+📊 [View Diagram: deployment.puml](./diagrams/deployment.puml)
 
 ---
 
 ## 2. Database Schema
 
 ### 2.1 Entity Relationship Diagram
-
-```plantuml
-@startuml ERD
-!theme plain
-
-entity "auth.users" as auth_users {
-  * id : UUID <<PK>>
-  --
-  email : TEXT
-  ...
-}
-
-entity "public.users" as users {
-  * id : UUID <<PK, FK>>
-  --
-  email : TEXT
-  full_name : TEXT
-  avatar_url : TEXT
-  created_at : TIMESTAMPTZ
-}
-
-entity "families" as families {
-  * id : UUID <<PK>>
-  --
-  name : TEXT
-  invite_code : TEXT <<UK>>
-  created_at : TIMESTAMPTZ
-}
-
-entity "family_members" as members {
-  * id : UUID <<PK>>
-  --
-  * user_id : UUID <<FK>>
-  * family_id : UUID <<FK>>
-  role : TEXT
-  joined_at : TIMESTAMPTZ
-}
-
-entity "categories" as categories {
-  * id : UUID <<PK>>
-  --
-  * family_id : UUID <<FK>>
-  name : TEXT
-  icon : TEXT
-  type : TEXT
-  is_default : BOOLEAN
-}
-
-entity "transactions" as transactions {
-  * id : UUID <<PK>>
-  --
-  * family_id : UUID <<FK>>
-  category_id : UUID <<FK>>
-  * created_by : UUID <<FK>>
-  amount : DECIMAL
-  note : TEXT
-  type : TEXT
-  transaction_date : DATE
-  created_at : TIMESTAMPTZ
-}
-
-auth_users ||--o| users : syncs
-users ||--o{ members : joins
-families ||--o{ members : has
-families ||--o{ categories : has
-families ||--o{ transactions : has
-categories ||--o{ transactions : categorizes
-
-@enduml
-```
+📊 [View Diagram: erd.puml](./diagrams/erd.puml)
 
 ### 2.2 Table Definitions
 
@@ -240,10 +85,6 @@ ALTER TABLE family_members ENABLE ROW LEVEL SECURITY;
 ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
 
--- Users: can only view/edit own profile
-CREATE POLICY "Users can view own profile" ON public.users
-    FOR SELECT USING (auth.uid() = id);
-
 -- Transactions: family members can CRUD
 CREATE POLICY "Family members can manage transactions" ON transactions
     FOR ALL USING (
@@ -258,34 +99,7 @@ CREATE POLICY "Family members can manage transactions" ON transactions
 ## 3. API Specification
 
 ### 3.1 Authentication Flow
-
-```plantuml
-@startuml Auth Flow
-!theme plain
-
-actor User
-participant "Next.js" as Web
-participant "Supabase Auth" as Auth
-participant "Express API" as API
-database "PostgreSQL" as DB
-
-User -> Web : Click "Sign in with Google"
-Web -> Auth : signInWithOAuth('google')
-Auth -> User : Google OAuth consent
-User -> Auth : Authorize
-Auth -> Web : JWT Token + Session
-
-User -> Web : View Dashboard
-Web -> API : GET /api/transactions\n+ Bearer Token
-API -> Auth : Verify JWT
-Auth -> API : User data
-API -> DB : Query (with RLS)
-DB -> API : Results
-API -> Web : JSON Response
-Web -> User : Render UI
-
-@enduml
-```
+📊 [View Diagram: auth-flow.puml](./diagrams/auth-flow.puml)
 
 ### 3.2 API Response Format
 
@@ -306,35 +120,27 @@ interface ErrorResponse {
 }
 ```
 
-### 3.3 Endpoint Details
+### 3.3 Endpoints
 
-#### POST /api/transactions/quick
-
-```plantuml
-@startuml Quick Input Flow
-!theme plain
-
-start
-:Receive input string;
-note right: "coffee 50k"
-
-:Parse with regex;
-if (Match found?) then (yes)
-  :Extract amount & note;
-  :Apply suffix multiplier\n(k=1000, m=1000000);
-  :Detect type from keywords;
-  :Fetch user's categories;
-  :Match category by keywords;
-  :Create transaction;
-  :Return success;
-else (no)
-  :Return PARSE_ERROR;
-endif
-
-stop
-
-@enduml
-```
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/auth/me` | Get current user |
+| GET | `/api/families/me` | Get user's family |
+| POST | `/api/families` | Create family |
+| POST | `/api/families/join` | Join family |
+| GET | `/api/families/:id/members` | Get members |
+| GET | `/api/transactions` | List transactions |
+| POST | `/api/transactions` | Create transaction |
+| POST | `/api/transactions/quick` | Quick input |
+| PUT | `/api/transactions/:id` | Update transaction |
+| DELETE | `/api/transactions/:id` | Delete transaction |
+| GET | `/api/transactions/summary` | Get summary |
+| GET | `/api/categories` | List categories |
+| POST | `/api/categories` | Create category |
+| PUT | `/api/categories/:id` | Update category |
+| DELETE | `/api/categories/:id` | Delete category |
+| GET | `/api/reports/category-breakdown` | Expense by category |
+| GET | `/api/reports/monthly-trend` | Monthly trend |
 
 ---
 
@@ -364,6 +170,14 @@ famfi-v2/
 │       └── package.json
 │
 ├── docs/
+│   ├── diagrams/               # PlantUML files
+│   │   ├── system-architecture.puml
+│   │   ├── deployment.puml
+│   │   ├── erd.puml
+│   │   ├── auth-flow.puml
+│   │   ├── quick-input-flow.puml
+│   │   ├── quick-input-parser.puml
+│   │   └── security-flow.puml
 │   ├── PRD.md
 │   └── TSD.md
 ├── Makefile
@@ -375,61 +189,12 @@ famfi-v2/
 ## 5. Quick Input Parser
 
 ### 5.1 Flow Diagram
+📊 [View Diagram: quick-input-flow.puml](./diagrams/quick-input-flow.puml)
 
-```plantuml
-@startuml Quick Input Parser
-!theme plain
+### 5.2 Parser Algorithm
+📊 [View Diagram: quick-input-parser.puml](./diagrams/quick-input-parser.puml)
 
-start
-:Input: "coffee 50k";
-
-partition "Pattern Matching" {
-  :Try pattern 1:\n^(.+?)\\s+([\\d,.]+)(k|m|tr)?$;
-  if (Match?) then (yes)
-    :note = "coffee"\namount = "50"\nsuffix = "k";
-  else (no)
-    :Try pattern 2:\n^([\\d,.]+)(k|m|tr)?\\s+(.+)$;
-    if (Match?) then (yes)
-      :Extract parts;
-    else (no)
-      :Return null;
-      stop
-    endif
-  endif
-}
-
-partition "Amount Calculation" {
-  switch (suffix?)
-  case (k)
-    :amount × 1,000;
-  case (m or tr)
-    :amount × 1,000,000;
-  case (none)
-    :amount as-is;
-  endswitch
-}
-
-partition "Type Detection" {
-  :Check INCOME keywords;
-  if (Match?) then (yes)
-    :type = INCOME;
-  else (no)
-    :Check EXPENSE keywords;
-    if (Match?) then (yes)
-      :type = EXPENSE;
-    else (no)
-      :type = null;
-    endif
-  endif
-}
-
-:Return { amount, note, type };
-stop
-
-@enduml
-```
-
-### 5.2 Amount Suffix Multipliers
+### 5.3 Amount Suffix Multipliers
 
 | Suffix | Multiplier | Example |
 |--------|------------|---------|
@@ -437,41 +202,46 @@ stop
 | m | ×1,000,000 | 10m → 10,000,000 |
 | tr | ×1,000,000 | 2tr → 2,000,000 |
 
+### 5.4 Keyword Detection
+
+**EXPENSE Keywords:**
+- Food: ăn, breakfast, lunch, dinner, cơm, phở
+- Coffee: coffee, cafe, cà phê, trà sữa
+- Transport: grab, taxi, uber, xăng
+- Shopping: mua, buy, chợ
+- Bills: điện, internet, wifi
+
+**INCOME Keywords:**
+- Salary: lương, salary
+- Bonus: thưởng, bonus
+- Freelance: freelance, tiền công
+
 ---
 
 ## 6. Security Implementation
 
 ### 6.1 Request Flow with Auth
+📊 [View Diagram: security-flow.puml](./diagrams/security-flow.puml)
 
-```plantuml
-@startuml Security Flow
-!theme plain
+### 6.2 JWT Verification
 
-participant Client
-participant "Auth Middleware" as MW
-participant "Supabase Auth" as Auth
-participant Service
-database DB
-
-Client -> MW : Request + Bearer Token
-MW -> MW : Extract token from header
-alt No token
-  MW -> Client : 401 Unauthorized
-else Has token
-  MW -> Auth : getUser(token)
-  alt Invalid token
-    Auth -> MW : Error
-    MW -> Client : 401 Invalid token
-  else Valid token
-    Auth -> MW : User data
-    MW -> Service : req.user = user
-    Service -> DB : Query with family scope
-    DB -> Service : Results
-    Service -> Client : Response
-  end
-end
-
-@enduml
+```typescript
+async function authMiddleware(req, res, next) {
+  const token = req.headers.authorization?.replace('Bearer ', '');
+  
+  if (!token) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  
+  const { data: { user }, error } = await supabase.auth.getUser(token);
+  
+  if (error || !user) {
+    return res.status(401).json({ error: 'Invalid token' });
+  }
+  
+  req.user = user;
+  next();
+}
 ```
 
 ---
@@ -496,8 +266,6 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbG...
 
 ## 8. Error Handling
 
-### 8.1 API Error Codes
-
 | Code | Description |
 |------|-------------|
 | `UNAUTHORIZED` | Missing or invalid auth token |
@@ -511,30 +279,17 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbG...
 
 ---
 
-## 9. Git Commit History
+## 9. Diagrams Index
 
-| # | Commit Message | Type |
-|---|----------------|------|
-| 1 | initial project setup | chore |
-| 2 | configure Supabase database | feat |
-| 3 | implement authentication | feat |
-| 4 | add public.users table | fix |
-| 5 | family management | feat |
-| 6 | transaction CRUD | feat |
-| 7 | auto-detect income/expense | feat |
-| 8 | dashboard with charts | feat |
-| 9 | category CRUD with icons | feat |
-| 10 | reports with pie/bar charts | feat |
-| 11 | polish with shadcn/ui | style |
-| 12 | update category icons to emoji | fix |
-| 13 | improve categories UX | style |
-| 14 | integrate reports in dashboard | feat |
-| 15 | fix date range queries | fix |
-| 16 | auto-detect categories | feat |
-| 17 | add Makefile | chore |
-| 18 | add settings page | feat |
-| 19 | add PRD | docs |
-| 20 | add TSD | docs |
+| Diagram | Path | Description |
+|---------|------|-------------|
+| System Architecture | [diagrams/system-architecture.puml](./diagrams/system-architecture.puml) | Overall system layers |
+| Deployment | [diagrams/deployment.puml](./diagrams/deployment.puml) | Production deployment |
+| ERD | [diagrams/erd.puml](./diagrams/erd.puml) | Database entities |
+| Auth Flow | [diagrams/auth-flow.puml](./diagrams/auth-flow.puml) | Authentication sequence |
+| Quick Input Flow | [diagrams/quick-input-flow.puml](./diagrams/quick-input-flow.puml) | Quick input processing |
+| Quick Input Parser | [diagrams/quick-input-parser.puml](./diagrams/quick-input-parser.puml) | Parser algorithm |
+| Security Flow | [diagrams/security-flow.puml](./diagrams/security-flow.puml) | Auth middleware |
 
 ---
 

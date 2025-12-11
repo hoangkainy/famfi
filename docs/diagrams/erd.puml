@@ -1,0 +1,67 @@
+@startuml ERD
+!theme plain
+
+entity "auth.users" as auth_users {
+  * id : UUID <<PK>>
+  --
+  email : TEXT
+  ...
+}
+
+entity "public.users" as users {
+  * id : UUID <<PK, FK>>
+  --
+  email : TEXT
+  full_name : TEXT
+  avatar_url : TEXT
+  created_at : TIMESTAMPTZ
+}
+
+entity "families" as families {
+  * id : UUID <<PK>>
+  --
+  name : TEXT
+  invite_code : TEXT <<UK>>
+  created_at : TIMESTAMPTZ
+}
+
+entity "family_members" as members {
+  * id : UUID <<PK>>
+  --
+  * user_id : UUID <<FK>>
+  * family_id : UUID <<FK>>
+  role : TEXT
+  joined_at : TIMESTAMPTZ
+}
+
+entity "categories" as categories {
+  * id : UUID <<PK>>
+  --
+  * family_id : UUID <<FK>>
+  name : TEXT
+  icon : TEXT
+  type : TEXT
+  is_default : BOOLEAN
+}
+
+entity "transactions" as transactions {
+  * id : UUID <<PK>>
+  --
+  * family_id : UUID <<FK>>
+  category_id : UUID <<FK>>
+  * created_by : UUID <<FK>>
+  amount : DECIMAL
+  note : TEXT
+  type : TEXT
+  transaction_date : DATE
+  created_at : TIMESTAMPTZ
+}
+
+auth_users ||--o| users : syncs
+users ||--o{ members : joins
+families ||--o{ members : has
+families ||--o{ categories : has
+families ||--o{ transactions : has
+categories ||--o{ transactions : categorizes
+
+@enduml

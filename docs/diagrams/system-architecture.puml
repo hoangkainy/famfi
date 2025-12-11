@@ -1,0 +1,60 @@
+@startuml System Architecture
+!theme plain
+
+skinparam componentStyle rectangle
+skinparam backgroundColor white
+
+package "Client Layer" {
+  [Next.js 15\nApp Router] as Frontend
+  [shadcn/ui + Tailwind] as UI
+  [Recharts] as Charts
+  [Supabase Client] as SupaClient
+  
+  Frontend --> UI
+  Frontend --> Charts
+  Frontend --> SupaClient
+}
+
+package "API Layer" {
+  [Express.js] as API
+  [Auth Middleware] as AuthMW
+  
+  package "Routes" {
+    [auth.ts] as AuthRoute
+    [family.ts] as FamilyRoute
+    [transaction.ts] as TxRoute
+    [category.ts] as CatRoute
+    [report.ts] as ReportRoute
+  }
+  
+  package "Services" {
+    [family.ts] as FamilyService
+    [transaction.ts] as TxService
+    [category.ts] as CatService
+    [report.ts] as ReportService
+  }
+  
+  API --> AuthMW
+  AuthMW --> Routes
+  Routes --> Services
+}
+
+package "Database Layer" {
+  database "Supabase PostgreSQL" as DB {
+    [users]
+    [families]
+    [family_members]
+    [transactions]
+    [categories]
+  }
+  [Row Level Security] as RLS
+  [Supabase Auth] as SupaAuth
+  
+  DB --> RLS
+}
+
+Frontend --> API : HTTP + Bearer Token
+SupaClient --> SupaAuth : OAuth / JWT
+Services --> DB : Supabase JS Client
+
+@enduml

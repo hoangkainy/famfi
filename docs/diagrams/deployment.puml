@@ -1,0 +1,21 @@
+@startuml Deployment
+!theme plain
+
+node "Vercel" {
+  [Next.js Frontend] as Web
+}
+
+node "Railway" {
+  [Express API] as API
+}
+
+cloud "Supabase" {
+  database "PostgreSQL" as DB
+  [Auth Service] as Auth
+}
+
+Web --> API : HTTPS
+API --> DB
+Web --> Auth : OAuth
+
+@enduml

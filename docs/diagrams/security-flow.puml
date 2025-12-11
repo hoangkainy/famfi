@@ -1,0 +1,28 @@
+@startuml Security Flow
+!theme plain
+
+participant Client
+participant "Auth Middleware" as MW
+participant "Supabase Auth" as Auth
+participant Service
+database DB
+
+Client -> MW : Request + Bearer Token
+MW -> MW : Extract token from header
+alt No token
+  MW -> Client : 401 Unauthorized
+else Has token
+  MW -> Auth : getUser(token)
+  alt Invalid token
+    Auth -> MW : Error
+    MW -> Client : 401 Invalid token
+  else Valid token
+    Auth -> MW : User data
+    MW -> Service : req.user = user
+    Service -> DB : Query with family scope
+    DB -> Service : Results
+    Service -> Client : Response
+  end
+end
+
+@enduml

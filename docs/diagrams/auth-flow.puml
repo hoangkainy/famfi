@@ -1,0 +1,25 @@
+@startuml Auth Flow
+!theme plain
+
+actor User
+participant "Next.js" as Web
+participant "Supabase Auth" as Auth
+participant "Express API" as API
+database "PostgreSQL" as DB
+
+User -> Web : Click "Sign in with Google"
+Web -> Auth : signInWithOAuth('google')
+Auth -> User : Google OAuth consent
+User -> Auth : Authorize
+Auth -> Web : JWT Token + Session
+
+User -> Web : View Dashboard
+Web -> API : GET /api/transactions\n+ Bearer Token
+API -> Auth : Verify JWT
+Auth -> API : User data
+API -> DB : Query (with RLS)
+DB -> API : Results
+API -> Web : JSON Response
+Web -> User : Render UI
+
+@enduml

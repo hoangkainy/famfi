@@ -1,0 +1,23 @@
+@startuml Quick Input Flow
+!theme plain
+
+start
+:Receive input string;
+note right: "coffee 50k"
+
+:Parse with regex;
+if (Match found?) then (yes)
+  :Extract amount & note;
+  :Apply suffix multiplier\n(k=1000, m=1000000);
+  :Detect type from keywords;
+  :Fetch user's categories;
+  :Match category by keywords;
+  :Create transaction;
+  :Return success;
+else (no)
+  :Return PARSE_ERROR;
+endif
+
+stop
+
+@enduml
