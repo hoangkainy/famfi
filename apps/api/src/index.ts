@@ -4,6 +4,7 @@ dotenv.config();
 import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 import { supabase } from './lib/supabase';
+import authRoutes from './routes/auth';
 
 const app: Express = express();
 const port = process.env.PORT || 3001;
@@ -17,10 +18,13 @@ app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// API routes placeholder
+// API routes
 app.get('/api', (req: Request, res: Response) => {
   res.json({ message: 'FamFi API v1.0' });
 });
+
+// Auth routes
+app.use('/api/auth', authRoutes);
 
 // Supabase connection test
 app.get('/api/db-test', async (req: Request, res: Response) => {

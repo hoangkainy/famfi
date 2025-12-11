@@ -1,6 +1,6 @@
 # FamFi - Development Tasks
 
-> Last updated: 2025-12-11 23:13
+> Last updated: 2025-12-11 23:20
 
 ## Current Sprint: MVP
 
@@ -18,24 +18,19 @@
   - Verified both apps running
   - Git initialized with initial commit
 
+#### Phase 2: Core Infrastructure
+- [x] **Configure Supabase** - 2025-12-11
+  - Created Supabase project
+  - Added environment variables (.env)
+  - Created Supabase client (`lib/supabase.ts`)
+  - Created database schema (`database/schema.sql`)
+  - Created seed data (`database/seed.sql`)
+  - Created TypeScript types (`types/index.ts`)
+  - Verified database connection ✅
+
 ---
 
 ### 🔄 In Progress
-
-#### Phase 2: Core Infrastructure
-- [/] **Configure Supabase**
-  - [x] Create Supabase project
-  - [x] Add environment variables (.env)
-  - [x] Create Supabase client (`lib/supabase.ts`)
-  - [x] Create database schema (`database/schema.sql`)
-  - [x] Create seed data (`database/seed.sql`)
-  - [x] Create TypeScript types (`types/index.ts`)
-  - [ ] **USER ACTION**: Run SQL in Supabase Dashboard
-  - [ ] Test database connection
-
----
-
-### ⏳ Pending
 
 #### Phase 2: Core Infrastructure (continued)
 - [ ] **Authentication**
@@ -43,6 +38,10 @@
   - [ ] Email/Password sign-up
   - [ ] Protected routes (frontend)
   - [ ] Auth middleware (backend)
+
+---
+
+### ⏳ Pending
 
 #### Phase 3: Family Management
 - [ ] **Family CRUD**
@@ -80,7 +79,8 @@
 | Checkpoint | Target | Status |
 |------------|--------|--------|
 | Project Setup | 2025-12-11 | ✅ Done |
-| Supabase + Auth | TBD | 🔄 In Progress |
+| Supabase Config | 2025-12-11 | ✅ Done |
+| Authentication | TBD | ⏳ Pending |
 | Family Management | TBD | ⏳ Pending |
 | Transaction CRUD | TBD | ⏳ Pending |
 | Dashboard MVP | TBD | ⏳ Pending |
@@ -96,16 +96,15 @@
 - ✅ Setup monorepo structure
 - ✅ Next.js frontend initialized
 - ✅ Express + TypeScript backend initialized
-- ✅ Created project documentation (`RULES.md`, `TASKS.md`)
-- ✅ Git initialized with initial commit
-- ✅ Created Supabase client
-- ✅ Created database schema (SQL)
-- ✅ Created seed data (SQL)
-- ✅ Created TypeScript types
-- ⏸️ **Paused**: Waiting for user to run SQL in Supabase Dashboard
+- ✅ Created project documentation
+- ✅ Git initialized
+- ✅ Supabase configured (client, schema, types)
+- ✅ Database connection verified
+- ⏸️ **Paused**: Ready for Authentication implementation
+
+**Git commits:**
+1. `chore: initial project setup`
+2. `feat(api): configure Supabase database connection and schema`
 
 **Next steps:**
-1. Run `schema.sql` in Supabase SQL Editor
-2. Run `seed.sql` in Supabase SQL Editor
-3. Test connection at http://localhost:3001/api/db-test
-4. Implement Authentication
+1. Implement Authentication (Google OAuth + Email)

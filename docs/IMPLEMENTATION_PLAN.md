@@ -175,7 +175,7 @@ erDiagram
 | Task | Status |
 |------|--------|
 | Project Setup (Monorepo) | ✅ Done |
-| Configure Supabase | 🔄 In Progress |
+| Configure Supabase | ✅ Done |
 | Authentication | ⏳ Pending |
 | Family Management | ⏳ Pending |
 | Transaction CRUD | ⏳ Pending |
