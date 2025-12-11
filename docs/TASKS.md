@@ -1,57 +1,56 @@
 # FamFi - Development Tasks
 
-> Last updated: 2025-12-12 00:23
+> Last updated: 2025-12-12 00:30
 
-## 🎉 MVP COMPLETE!
+## 🎉 MVP + UI POLISH COMPLETE!
 
-### ✅ All Features Implemented
+### All Features (11 commits)
 
-| # | Feature | Status |
-|---|---------|--------|
-| 1 | Project Setup (Monorepo) | ✅ |
-| 2 | Supabase Config (DB + RLS) | ✅ |
-| 3 | Authentication (Google + Email) | ✅ |
-| 4 | Family Management | ✅ |
-| 5 | Transaction CRUD | ✅ |
-| 6 | Quick Input (auto-detect) | ✅ |
-| 7 | Categories (CRUD + icons) | ✅ |
-| 8 | Dashboard (summary + recent) | ✅ |
-| 9 | Reports (pie + bar charts) | ✅ |
+| Feature | Status |
+|---------|--------|
+| Project Setup | ✅ |
+| Supabase Config | ✅ |
+| Authentication | ✅ |
+| Family Management | ✅ |
+| Transaction CRUD | ✅ |
+| Quick Input (auto-detect) | ✅ |
+| Categories (icon picker) | ✅ |
+| Dashboard | ✅ |
+| Reports (charts) | ✅ |
+| **UI Polish (shadcn/ui)** | ✅ NEW |
 
 ---
 
 ## Pages
 
-| Page | Path | Description |
-|------|------|-------------|
-| Login | /login | Google OAuth + Email |
-| Register | /register | Email signup |
-| Onboarding | /onboarding | Create/Join family |
-| Dashboard | /dashboard | Quick input + summary |
-| Transactions | /transactions | List + quick add |
-| Categories | /categories | CRUD + icon picker |
-| Reports | /reports | Charts |
+| Page | Path |
+|------|------|
+| Login | /login |
+| Register | /register |
+| Onboarding | /onboarding |
+| Dashboard | /dashboard |
+| Transactions | /transactions |
+| Categories | /categories |
+| Reports | /reports |
 
 ---
 
-## Git Commits (10 total)
+## Git Commits
 
 1. `chore: initial project setup`
-2. `feat(api): configure Supabase database connection and schema`
-3. `feat(auth): implement authentication with Supabase Auth`
-4. `fix(auth): add public.users table and trigger for Google OAuth`
-5. `feat(family): implement family management with create and join flow`
-6. `feat(transaction): implement transaction CRUD with quick input parser`
-7. `feat(quick-input): auto-detect income/expense from keywords`
-8. `feat(dashboard): add quick input, summary cards, and improved mobile UX`
-9. `feat(categories): implement category CRUD with icon picker`
-10. `feat(reports): add pie chart and bar chart for financial reports`
+2. `feat(api): configure Supabase database`
+3. `feat(auth): implement authentication`
+4. `fix(auth): add public.users table`
+5. `feat(family): family management`
+6. `feat(transaction): transaction CRUD`
+7. `feat(quick-input): auto-detect`
+8. `feat(dashboard): quick input + summary`
+9. `feat(categories): CRUD + icons`
+10. `feat(reports): charts`
+11. `style(ui): polish with shadcn/ui`
 
 ---
 
-## Next Steps (Optional)
+## Next Steps
 
 - [ ] Deploy to Vercel + Railway
-- [ ] UI polish with shadcn/ui
-- [ ] Add more category icons
-- [ ] Export transactions to CSV

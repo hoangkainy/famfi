@@ -1,7 +1,26 @@
--- FamFi Seed Data
--- Default categories for new families
+-- Update existing categories to use emoji icons
+-- Run this in Supabase SQL Editor
 
--- This function creates default categories for a family
+-- Expense categories
+UPDATE categories SET icon = '🍔' WHERE name = 'Food & Dining';
+UPDATE categories SET icon = '🚗' WHERE name = 'Transportation';
+UPDATE categories SET icon = '🛒' WHERE name = 'Shopping';
+UPDATE categories SET icon = '⚡' WHERE name = 'Bills & Utilities';
+UPDATE categories SET icon = '🎮' WHERE name = 'Entertainment';
+UPDATE categories SET icon = '💊' WHERE name = 'Healthcare';
+UPDATE categories SET icon = '📚' WHERE name = 'Education';
+UPDATE categories SET icon = '💅' WHERE name = 'Personal Care';
+UPDATE categories SET icon = '🎁' WHERE name = 'Gifts';
+UPDATE categories SET icon = '📦' WHERE name = 'Other Expense';
+
+-- Income categories
+UPDATE categories SET icon = '💼' WHERE name = 'Salary';
+UPDATE categories SET icon = '🏆' WHERE name = 'Bonus';
+UPDATE categories SET icon = '📈' WHERE name = 'Investment';
+UPDATE categories SET icon = '💻' WHERE name = 'Freelance';
+UPDATE categories SET icon = '💰' WHERE name = 'Other Income';
+
+-- Also update the trigger function with emoji icons
 CREATE OR REPLACE FUNCTION create_default_categories(p_family_id UUID)
 RETURNS VOID AS $$
 BEGIN
@@ -28,17 +47,3 @@ BEGIN
     (p_family_id, 'Other Income', '💰', 'INCOME', true);
 END;
 $$ LANGUAGE plpgsql;
-
--- Trigger to auto-create default categories when a family is created
-CREATE OR REPLACE FUNCTION on_family_created()
-RETURNS TRIGGER AS $$
-BEGIN
-    PERFORM create_default_categories(NEW.id);
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER trigger_family_created
-    AFTER INSERT ON families
-    FOR EACH ROW
-    EXECUTE FUNCTION on_family_created();
