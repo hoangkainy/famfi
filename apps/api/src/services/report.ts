@@ -14,10 +14,21 @@ interface MonthlySummary {
   expense: number;
 }
 
+function getLastDayOfMonth(year: number, month: number): string {
+  // month is 0-indexed (0 = January)
+  // Get the first day of next month, then subtract 1 day
+  const lastDay = new Date(year, month + 1, 0).getDate();
+  const monthStr = String(month + 1).padStart(2, '0');
+  return `${year}-${monthStr}-${String(lastDay).padStart(2, '0')}`;
+}
+
 export async function getCategoryBreakdown(familyId: string, month?: string): Promise<CategorySummary[]> {
-  const currentMonth = month || new Date().toISOString().slice(0, 7);
+  const now = new Date();
+  const currentMonth = month || now.toISOString().slice(0, 7);
+  const [year, monthNum] = currentMonth.split('-').map(Number);
+  
   const startDate = `${currentMonth}-01`;
-  const endDate = `${currentMonth}-31`;
+  const endDate = getLastDayOfMonth(year, monthNum - 1); // monthNum is 1-indexed, convert to 0-indexed
 
   const { data, error } = await supabase
     .from('transactions')
@@ -67,9 +78,12 @@ export async function getMonthlyTrend(familyId: string, months: number = 6): Pro
 
   for (let i = months - 1; i >= 0; i--) {
     const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const monthStr = date.toISOString().slice(0, 7);
-    const startDate = `${monthStr}-01`;
-    const endDate = `${monthStr}-31`;
+    const year = date.getFullYear();
+    const month = date.getMonth(); // 0-indexed
+    
+    const monthStr = String(month + 1).padStart(2, '0');
+    const startDate = `${year}-${monthStr}-01`;
+    const endDate = getLastDayOfMonth(year, month);
 
     const { data, error } = await supabase
       .from('transactions')
